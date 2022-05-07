@@ -1,0 +1,43 @@
+syntax = "proto3";
+package main;
+option go_package = ".;pb";
+
+import "google/protobuf/timestamp.proto";
+
+// A Thread is a group where people will live comments
+message Thread {
+  string id = 1;
+  string name = 2;
+  int64 total_messages = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+message CreateThreadRequest{
+  string name = 1;
+}
+message GetThreadRequest{
+  string id = 1;
+}
+
+message Comment{
+  string id = 1;
+  string thread_id = 2;
+  string message = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+message GetCommentsRequest{
+  string thread_id = 1;
+}
+// liveComments is our service, the service is the API, and rpc statements below will be methods that are available by the API
+service liveComments{
+  // CreateThread will create new thread of live comments system
+  rpc CreateThread(CreateThreadRequest) returns (Thread) {};
+  // GetThread will Get thread of live comments system
+  rpc GetThread(GetThreadRequest) returns (Thread) {};
+  // CreateComment will create comments on live comments system
+  rpc CreateComment (Comment) returns (Comment){}
+  // getComments will stream the comments in real time
+  rpc GetComments (GetCommentsRequest) returns (stream Comment){}
+}
+
+//protoc service.proto --js_out=import_style=commonjs,binary:. --grpc-web_out=import_style=commonjs,mode=grpcwebtext:. --go-grpc_out=. --
+//go-grpc_opt=require_unimplemented_servers=false --go_out=.
